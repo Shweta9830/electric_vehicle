@@ -1,0 +1,125 @@
+---
+title: "Electric_Vehicle_Project"
+output: html_document
+date: "2024-09-10"
+---
+
+# Specify the file path
+
+
+```{r}
+file_path <- "C:/Users/Shweta/Downloads/Electric Vehicle Population Data (1).csv"
+```
+
+# Read the CSV file into a data frame
+
+
+```{r}
+Electric_Vehicle_Population_Data <- read.csv(file_path)
+```
+
+# Display the first few rows of the data frame to confirm it was read correctly
+
+head(Electric_Vehicle_Population_Data)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+
+```{r}
+is.null(Electric_Vehicle_Population_Data)
+```
+## Dataset cleaning for NULL values
+
+```{r}
+Electric_Vehicle_Population_Data %>%
+  select(VIN, County, City, State, ZIP_Code, Model_Year, Make, Model, Electric_Vehicle_Type, CAFV, Range_Km, Base_MSRP, Legislative_District, DOLVehicleID, VehicleLocation, ElectricUtility) %>% na.omit()
+```
+
+```{r}
+is.null(Electric_Vehicle_Population_Data)
+```
+
+##Calculating the Count of Electric Vehicle Type{BEV/PHEV} Per City and Arranging in Decreasing Order
+
+```{r}
+NEW_TABLE <- Electric_Vehicle_Population_Data %>% count(City , Electric_Vehicle_Type , sort = TRUE)
+NEW_TABLE
+```
+
+##Calculating the count of Make{Brand} and Electric Vehicle Type{BEV/PHEV} per State and arranging in decreasing order.
+
+```{r}
+NEW_TABLE2 <- Electric_Vehicle_Population_Data %>% count(State , Make ,Electric_Vehicle_Type, sort = TRUE)
+NEW_TABLE2
+```
+##Calculating the Count of Make{Brand} and Electric Vehicle Type{BEV/PHEV} per Year and arranging in decreasing order.
+
+```{r}
+NEW_TABLE3 <- Electric_Vehicle_Population_Data %>% count(Model_Year , Make ,Electric_Vehicle_Type, sort = TRUE)
+NEW_TABLE3
+```
+
+##Calculating the Count of individual Make{Brand} per City with respect to its Model Year and arranging in descending order.
+
+```{r}
+NEW_TABLE4 <- Electric_Vehicle_Population_Data %>% count(City , Make , Model_Year, sort = TRUE)
+NEW_TABLE4
+```
+##To show the preference of Electric Vehicle Type{BEV/PHEV} in Cities and taking the Top 20 Count.
+
+```{r} 
+NEW_TABLE %>% 
+   slice(1:20) %>% 
+ggplot(., aes(x= City, y = n, color = Electric_Vehicle_Type)) + 
+  geom_bar (stat = 'identity') + 
+labs (title ="ELECTRIC VEHICLE TYPE PER CITY") + 
+  theme (axis.text.x=element_text (angle = -90, hjust = 0))
+```
+
+##To show which Make{Brands} increased the Production of Electric Vehicle Type{BEV/PHEV} per Year.
+## TO SHOW TOP PREFERED ELECTRIC VEHICLE MANUFACTURING MAKE (BRANDS} IN TOP 40 CITIE PER YEAR. 
+```{r}
+ggplot(data = NEW_TABLE3, mapping = aes(x = Make, y = Model_Year, size = n, color = Electric_Vehicle_Type)) + 
+geom_point() + 
+labs(title = "Electric Vehicles type increase per Brand with respect to year") + 
+  theme (axis.text.x=element_text (angle = -90, hjust = 0))
+```
+
+##To show the preference of Make{Brands} and Electric Vehicle Type{BEV/PHEV} in each State.
+```{r}
+ggplot(NEW_TABLE2, aes(Electric_Vehicle_Type, State, color = Make, size = Year)) + 
+ geom_boxplot(size = 1)+
+ labs(title = "Statewise increase in Electric Vehicle Type with respect to Brand")
+```
+
+## TO SHOW TOP PREFERED ELECTRIC VEHICLE MANUFACTURING MAKE (BRANDS} IN TOP 40 CITIE PER YEAR. 
+```{r}
+NEW_TABLE4 %>% 
+ slice(1:40) %>%
+ggplot (. , mapping = aes (x = City, y = n, color = Make)) + 
+geom_point + 
+facet_wrap (~ Model_Year) +
+ labs (title = "Top Electric Vehicle Manufacturing Companies From 2013 to 2022" ) + 
+  theme (axis.text.x=element_text (angle = -90, hjust = 0))
+```
+
+##```{r}
+##ggplot(NEW_TABLE4, aes(x = City, y = n, color = Make)) + 
+##  geom_point() + 
+##  facet_wrap(~ Model_Year) +
+##  labs(title = "Top Electric Vehicle Manufacturing Companies From 2013 to 2022") + 
+##  theme(axis.text.x = element_text(angle = -90, hjust = 0))
+##```
+
+##To Check Weather Tesla has the Most Battery Electric Vehicle Cars.
+```{r}
+TABLE_CHECK <- Electric_Vehicle_Population_Data%>% count(Make, Electric_Vehicle_Type, sort=TRUE)
+TABLE_CHECK
+```
+
